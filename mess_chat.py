@@ -12,15 +12,30 @@ incoming_message_list = []
 class Message(BaseModel):
     message: str
 
+#set params for queue
+#send message
+#num messages
+#queue name
+
 @app.get("/")
 async def startup():
     return 'The API is currently running'
 
-@app.post("/send/")
-async def send(message : Message):
+@app.get("/send1/")
+async def send():
     connect = MessageServer()
-    connect.send_message(message.message)
-    sent_message_list.append(message)
+    connect.send_messages("test")
+    sent_message_list.append(len(sent_message_list))
+    return {
+        'message_count' : len(sent_message_list),
+        'data' : sent_message_list
+    }
+
+@app.get("/send/")
+async def send():
+    connect = MessageServer()
+    connect.send_message("test")
+    sent_message_list.append(len(sent_message_list))
     return {
         'message_count' : len(sent_message_list),
         'data' : sent_message_list
@@ -29,5 +44,4 @@ async def send(message : Message):
 @app.get("/messages/")
 async def messages():
     connect = MessageServer()
-    connect.receieve_messages(1)
-    return incoming_message_list
+    return connect.receieve_messages(num_messages=1)
